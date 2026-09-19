@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="300">
+    <title>电力交易能源市场日报</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent-blue: #3b82f6;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-yellow: #eab308;
+            --accent-orange: #f97316;
+            --border-color: #475569;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            border-bottom: 2px solid var(--accent-blue);
+            margin-bottom: 30px;
+        }
+        header h1 { font-size: 2.2rem; margin-bottom: 10px; color: var(--text-primary); }
+        .last-update {
+            color: var(--accent-yellow);
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .price-card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--accent-blue);
+            transition: transform 0.2s;
+        }
+        .price-card:hover { transform: translateY(-2px); }
+        .price-card.up { border-left-color: var(--accent-red); }
+        .price-card.down { border-left-color: var(--accent-green); }
+        .price-card .label { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 8px; }
+        .price-card .value { font-size: 1.5rem; font-weight: bold; }
+        .price-card .change { font-size: 0.9rem; margin-top: 5px; }
+        .up .change { color: var(--accent-red); }
+        .down .change { color: var(--accent-green); }
+        .section {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .section h2 {
+            color: var(--accent-blue);
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .event-card {
+            background: var(--bg-primary);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .event-title {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--accent-orange);
+        }
+        .event-meta { color: var(--text-secondary); font-size: 0.85rem; }
+        .event-meta a { color: var(--accent-blue); text-decoration: none; }
+        .event-meta a:hover { text-decoration: underline; }
+        .event-content { margin-bottom: 15px; color: var(--text-secondary); }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+        th {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        tr:nth-child(even) { background: rgba(255,255,255,0.03); }
+        .domestic-table { background: rgba(234, 179, 8, 0.08); }
+        .domestic-table th { background: rgba(234, 179, 8, 0.2); color: var(--accent-yellow); }
+        .summary-table th { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
+        .bullish { color: var(--accent-red); font-weight: bold; }
+        .bearish { color: var(--accent-green); font-weight: bold; }
+        .neutral { color: var(--text-secondary); }
+        .logic-chain {
+            background: var(--bg-primary);
+            border-left: 3px solid var(--accent-blue);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        .monitor-log {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .monitor-log a { color: var(--accent-blue); }
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--accent-blue);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .key-dates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+        .key-date-item {
+            background: var(--bg-primary);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-yellow);
+        }
+        .archive-section { margin-top: 30px; }
+        @media (max-width: 768px) {
+            .price-grid { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.6rem; }
+        }
+    </style>
+    <script>
+        setInterval(function() {
+            location.reload();
+        }, 300000);
+        console.log('Auto-refresh enabled: 300s');
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ 电力交易能源市场日报</h1>
+            <div class="last-update">最后更新：北京时间 2026-09-19 14:30</div>
+            <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 8px;">
+                自动刷新间隔：5分钟 | 数据来源：ICE/CME/EEX/INE/各交易中心/IEA/EIA等
+            </div>
+        </header>
+
+        <!-- 价格卡片 -->
+        <div class="price-grid" id="price-cards">
+            <div class="price-card up">
+                <div class="label">Brent原油</div>
+                <div class="value">$103.87</div>
+                <div class="change">▼ -0.91% (连跌3日)</div>
+            </div>
+            <div class="price-card up">
+                <div class="label">WTI原油</div>
+                <div class="value">$100.30</div>
+                <div class="change">▼ -1.58% (连跌3日)</div>
+            </div>
+            <div class="price-card up">
+                <div class="label">TTF天然气</div>
+                <div class="value">€79.21</div>
+                <div class="change">▼ -0.14% (30日+19.73%)</div>
+            </div>
+            <div class="price-card up">
+                <div class="label">JKM LNG</div>
+                <div class="value">$18.463</div>
+                <div class="change">▲ +6.71% (日涨)</div>
+            </div>
+            <div class="price-card up">
+                <div class="label">秦港Q5500/BSPI</div>
+                <div class="value">¥728/t</div>
+                <div class="change">→ 环比持平</div>
+            </div>
+            <div class="price-card up">
+                <div class="label">全国动力煤(商务部)</div>
+                <div class="value">¥840/t</div>
+                <div class="change">▲ +0.96% (周环比)</div>
+            </div>
+            <div class="price-card up">
+                <div class="label">SHPGX LNG出厂价</div>
+                <div class="value">¥6223/t</div>
+                <div class="change">→ 高位震荡</div>
+            </div>
+            <div class="price-card up">
+                <div class="label">重庆交易中心LNG</div>
+                <div class="value">¥6010/t</div>
+                <div class="change">▲ +0.02% (西北)</div>
+            </div>
+            <div class="price-card">
+                <div class="label">德国Q4电力期货</div>
+                <div class="value">€173.61</div>
+                <div class="change">▲ 历史高位区间</div>
+            </div>
+            <div class="price-card">
+                <div class="label">美元指数DXY</div>
+                <div class="value">100.22</div>
+                <div class="change">▼ -0.04%</div>
+            </div>
+            <div class="price-card">
+                <div class="label">VIX恐慌指数</div>
+                <div class="value">17.98</div>
+                <div class="change">▲ +0.06%</div>
+            </div>
+            <div class="price-card up">
+                <div class="label">欧洲储气库</div>
+                <div class="value">66.59%</div>
+                <div class="change">▼ 历史同期最低</div>
+            </div>
+        </div>
+
+        <!-- 关键关注日期 -->
+        <div class="section">
+            <h2>📅 关键关注日期</h2>
+            <div class="key-dates">
+                <div class="key-date-item">
+                    <strong>9月22-28日</strong><br>
+                    第81届联合国大会
+                </div>
+                <div class="key-date-item">
+                    <strong>10月初</strong><br>
+                    沙特管道预计部分恢复
+                </div>
+                <div class="key-date-item">
+                    <strong>10月11日</strong><br>
+                    IEF17国际能源论坛
+                </div>
+                <div class="key-date-item">
+                    <strong>11月初</strong><br>
+                    卡塔尔LNG不可抗力到期
+                </div>
+            </div>
+        </div>
+
+        <!-- 当日事件综合影响汇总 -->
+        <div class="section">
+            <h2>📊 当日事件综合影响汇总 — 国内价格</h2>
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>国内品种</th>
+                        <th>当前价格</th>
+                        <th>看涨事件数</th>
+                        <th>看跌事件数</th>
+                        <th>中性事件数</th>
+                        <th>综合方向</th>
+                        <th>预测幅度</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>INE SC原油</td>
+                        <td>约¥520-530/桶</td>
+                        <td class="bullish">5</td>
+                        <td class="bearish">1</td>
+                        <td class="neutral">0</td>
+                        <td class="bullish">强烈看涨</td>
+                        <td class="bullish">+5~8%（至¥545-570）</td>
+                    </tr>
+                    <tr>
+                        <td>成品油(92#/95#/0#)</td>
+                        <td>待9月24日调价</td>
+                        <td class="bullish">4</td>
+                        <td class="bearish">1</td>
+                        <td class="neutral">1</td>
+                        <td class="bullish">看涨</td>
+                        <td class="bullish">92#涨0.49元/L，95#涨0.52元/L</td>
+                    </tr>
+                    <tr>
+                        <td>秦港Q5500</td>
+                        <td>¥728/t</td>
+                        <td class="bullish">3</td>
+                        <td class="bearish">0</td>
+                        <td class="neutral">2</td>
+                        <td class="bullish">温和看涨</td>
+                        <td class="bullish">+2~4%（至¥740-760）</td>
+                    </tr>
+                    <tr>
+                        <td>BSPI环渤海煤价</td>
+                        <td>¥728/t</td>
+                        <td class="bullish">3</td>
+                        <td class="bearish">0</td>
+                        <td class="neutral">2</td>
+                        <td class="bullish">温和看涨</td>
+                        <td class="bullish">+2~3%（至¥740-750）</td>
+                    </tr>
+                    <tr>
+                        <td>SHPGX天然气</td>
+                        <td>¥6223/t</td>
+                        <td class="bullish">5</td>
+                        <td class="bearish">0</td>
+                        <td class="neutral">0</td>
+                        <td class="bullish">强烈看涨</td>
+                        <td class="bullish">+8~15%（至¥6700-7200）</td>
+                    </tr>
+                    <tr>
+                        <td>重庆交易中心LNG</td>
+                        <td>¥6010/t</td>
+                        <td class="bullish">5</td>
+                        <td class="bearish">0</td>
+                        <td class="neutral">0</td>
+                        <td class="bullish">强烈看涨</td>
+                        <td class="bullish">+8~15%（至¥6500-7000）</td>
+                    </tr>
+                    <tr>
+                        <td>广东电力现货</td>
+                        <td>~372元/MWh</td>
+                        <td class="bullish">3</td>
+                        <td class="bearish">1</td>
+                        <td class="neutral">1</td>
+                        <td class="bullish">温和看涨</td>
+                        <td class="bullish">+5~10%（至¥390-410）</td>
+                    </tr>
+                    <tr>
+                        <td>山西电力现货</td>
+                        <td>~303元/MWh</td>
+                        <td class="bullish">3</td>
+                        <td class="bearish">1</td>
+                        <td class="neutral">1</td>
+                        <td class="bullish">温和看涨</td>
+                        <td class="bullish">+3~8%（至¥310-330）</td>
+                    </tr>
+                    <tr>
+                        <td>山东电力现货</td>
+                        <td>~299元/MWh</td>
+                        <td class="bullish">3</td>
+                        <td class="bearish">1</td>
+                        <td class="neutral">1</td>
+                        <td class="bullish">温和看涨</td>
+                        <td class="bullish">+3~8%（至¥310-325）</td>
+                    </tr>
+                    <tr>
+                        <td>江苏电力现货</td>
+                        <td>~352元/MWh</td>
+                        <td class="bullish">3</td>
+                        <td class="bearish">1</td>
+                        <td class="neutral">1</td>
+                        <td class="bullish">温和看涨</td>
+                        <td class="bullish">+3~8%（至¥360-380）</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 事件分析列表 -->
+        <div class="section" id="event-analysis-list">
+            <h2>🔍 事件深度分析（按时间倒序，新事件在前）</h2>
+
+            <!-- 事件1 -->
+            <div class="event-card">
+                <div class="event-header">
+                    <div>
+                        <div class="event-title">【事件001】美国签署《2026年格雷厄姆制裁俄罗斯和伊朗法案》</div>
+                        <div class="event-meta">日期：2026-09-18 | 来源：<a href="https://cbgc.scol.com.cn/news/7972140" target="_blank">央视新闻/新京报</a>、<a href="http://intl.ce.cn/sjjj/qy/202609/t20260918_3220257.shtml" target="_blank">中国经济网</a></div>
+                    </div>
+                </div>
+                <div class="event-content">
+                    美东时间9月18日，美方将该法案签署成法。该法全面强化对俄制裁，延长对伊有关制裁，并明确可对进口俄罗斯石油或天然气的第三国加征最高100%所谓"次级关税"。法案第113条允许总统对俄原油和天然气五大进口国及协助规避制裁程度最高的五个国家加征最高100%关税。中方商务部回应称反对缺乏联合国授权的单边制裁，保留采取一切必要措施的权利。
+                </div>
+                <h4 style="color: var(--accent-blue); margin: 15px 0 10px;">国际影响分析</h4>
+                <table>
+                    <thead>
+                        <tr><th>品种</th><th>影响方向</th><th>传导路径</th><th>预测幅度</th><th>置信度</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Brent原油</td><td class="bullish">看涨</td><td>制裁收紧→俄油出口受限→全球供应收缩</td><td>+3~5%（至$107-109）</td><td>75%</td></tr>
+                        <tr><td>WTI原油</td><td class="bullish">看涨</td><td>替代需求增加→美油溢价上升</td><td>+3~5%（至$103-105）</td><td>75%</td></tr>
+                        <tr><td>TTF天然气</td><td class="bullish">看涨</td><td>俄气出口受限→欧洲补库竞争加剧</td><td>+5~10%（至€83-87）</td><td>70%</td></tr>
+                        <tr><td>JKM LNG</td><td class="bullish">看涨</td><td>全球LNG贸易流重构→亚洲溢价扩大</td><td>+5~10%（至$19-20）</td><td>70%</td></tr>
+                    </tbody>
+                </table>
+                <div class="logic-chain">
+                    <strong>推测逻辑链：</strong><br>
+                    2022年俄乌冲突后欧美已对俄实施多轮制裁→但俄油通过"影子船队"及第三国转口仍大量流入市场（印度、中国为主要接收方）→本次法案直接威胁对第三国加征100%关税→若严格执行，将实质性切断俄油转口通道→全球原油供应或减少200-300万桶/日→油价重回110-120美元区间。<br><br>
+                    <strong>历史参照：</strong>2022年6月欧盟通过第六轮对俄制裁（禁运海运原油），Brent从$115涨至$123；2024年美国对俄油价格上限收紧，油价短期涨8%。
+                </div>
+                <h4 style="color: var(--accent-yellow); margin: 15px 0 10px;">国内价格系列影响推测</h4>
+                <table class="domestic-table">
+                    <thead>
+                        <tr><th>国内品种</th><th>当前价格</th><th>影响方向</th><th>传导路径</th><th>预测幅度</th><th>置信度</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>INE SC原油</td><td>~¥520-530/桶</td><td class="bullish">看涨</td><td>国际Brent↑→INE SC跟涨+人民币贬值因素</td><td>+4~7%（至¥540-565）</td><td>75%</td></tr>
+                        <tr><td>成品油</td><td>待9月24日调价</td><td class="bullish">看涨</td><td>原油成本↑→发改委调价窗口上调</td><td>92#+0.49元/L，95#+0.52元/L</td><td>90%</td></tr>
+                        <tr><td>秦港Q5500</td><td>¥728/t</td><td class="neutral">中性偏涨</td><td>油价↑→煤化工替代需求↑→但保供政策压制</td><td>+1~2%（至¥735-745）</td><td>55%</td></tr>
+                        <tr><td>BSPI环渤海煤价</td><td>¥728/t</td><td class="neutral">中性偏涨</td><td>同上，但指数滞后反应</td><td>+1~2%</td><td>55%</td></tr>
+                        <tr><td>SHPGX天然气</td><td>¥6223/t</td><td class="bullish">看涨</td><td>国际LNG↑→进口成本↑→国内跟涨</td><td>+5~10%（至¥6500-6800）</td><td>70%</td></tr>
+                        <tr><td>重庆交易中心LNG</td><td>¥6010/t</td><td class="bullish">看涨</td><td>国际JKM↑→进口LNG到岸价↑→区域价格传导</td><td>+5~10%（至¥6300-6600）</td><td>70%</td></tr>
+                        <tr><td>广东电力现货</td><td>~372元/MWh</td><td class="bullish">看涨</td><td>气价↑→气电边际成本↑→现货电价↑</td><td>+5~10%</td><td>65%</td></tr>
+                        <tr><td>山西/山东/江苏电力</td><td>299-352元/MWh</td><td class="bullish">看涨</td><td>煤价微涨+气电联动→边际定价上移</td><td>+3~8%</td><td>60%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 事件2 -->
+            <div class="event-card">
+                <div class="event-header">
+                    <div>
+                        <div class="event-title">【事件002】国际油价连跌三日，Brent回落至$103.87</div>
+                        <div class="event-meta">日期：2026-09-18 | 来源：<a href="https://www.bnreport.com/en/oil-prices-drop-settlement/" target="_blank">Business News Report</a>、<a href="http://m.toutiao.com/group/7687245488319382070/" target="_blank">智慧生活报</a></div>
+                    </div>
+                </div>
+                <div class="event-content">
+                    9月18日国际油价连续第三日下跌。纽约商品交易所10月交货的WTI原油期货价格下跌1.61美元，收于每桶100.30美元，跌幅1.58%；11月交货的Brent原油期货价格下跌0.95美元，收于每桶103.87美元，跌幅0.91%。尽管如此，周线仍录得上涨。市场仍在消化沙特管道袭击和霍尔木兹海峡通航受阻的影响，部分多头获利了结。
+                </div>
+                <h4 style="color: var(--accent-blue); margin: 15px 0 10px;">国际影响分析</h4>
+                <table>
+                    <thead>
+                        <tr><th>品种</th><th>影响方向</th><th>传导路径</th><th>预测幅度</th><th>置信度</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Brent原油</td><td class="bearish">短期回调</td><td>多头获利了结→技术性回调</td><td>-1~3%（短期）</td><td>70%</td></tr>
+                        <tr><td>WTI原油</td><td class="bearish">短期回调</td><td>同上</td><td>-1~3%（短期）</td><td>70%</td></tr>
+                    </tbody>
+                </table>
+                <div class="logic-chain">
+                    <strong>推测逻辑链：</strong><br>
+                    油价在沙特管道遇袭后快速冲高至$107-109→部分短线交易者获利了结→但地缘政治风险溢价仍支撑价格→霍尔木兹海峡通航量仍低于正常水平→预计回调空间有限，$100为WTI强支撑位。<br><br>
+                    <strong>历史参照：</strong>2022年俄乌冲突初期，Brent从$139回调至$98后再度上涨；2024年中东紧张局势中，油价在冲高后通常回调3-5%再继续上行。
+                </div>
+                <h4 style="color: var(--accent-yellow); margin: 15px 0 10px;">国内价格系列影响推测</h4>
+                <table class="domestic-table">
+                    <thead>
+                        <tr><th>国内品种</th><th>当前价格</th><th>影响方向</th><th>传导路径</th><th>预测幅度</th><th>置信度</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>INE SC原油</td><td>~¥520-530/桶</td><td class="bearish">短期微跌</td><td>Brent回调→INE SC小幅跟跌</td><td>-1~2%（短期）</td><td>65%</td></tr>
+                        <tr><td>成品油</td><td>待9月24日调价</td><td class="neutral">中性</td><td>调价周期内波动已计入</td><td>按机制上调不变</td><td>90%</td></tr>
+                        <tr><td>秦港Q5500/BSPI</td><td>¥728/t</td><td class="neutral">中性</td><td>油价回调对煤价影响微弱</td><td>基本持平</td><td>80%</td></tr>
+                        <tr><td>SHPGX天然气</td><td>¥6223/t</td><td class="neutral">中性</td><td>气价更多受国际LNG影响</td><td>基本持平</td><td>75%</td></tr>
+                        <tr><td>电力（各省）</td><td>299-481元/MWh</td><td class="neutral">中性</td><td>短期油价波动对电力影响有限</td><td>基本持平</td><td>80%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 事件3 -->
+            <div class="event-card">
+                <div class="event-header">
+                    <div>
+                        <div class="event-title">【事件003】沙特东西输油管道9月10日遭袭，预防性关闭</div>
+                        <div class="event-meta">日期：2026-09-10~14 | 来源：<a href="https://theamericanexpress.us/article/oil-prices-surge-after-bombing-of-key-saudi-pipeline-2026-09-15" target="_blank">The American Express Times</a>、<a href="https://www.gulftoday.ae/news/2026/09/14/oil-prices-up-nearly-3-following-new-strikes-on-saudi-strait-of-hormuz" target="_blank">Gulf Today</a>、<a href="https://discoveryalert.com/news/middle-east-oil-crisis-september-2026/" target="_blank">Discovery Alert</a></div>
+                    </div>
+                </div>
+                <div class="event-content">
+                    9月10日上午，沙特东西输油管道（East-West Pipeline）的利雅得段及麦地那地区段多次遭无人机袭击，沙特能源部宣布对该管道采取预防性关闭措施。该管道日输送能力约400-500万桶原油，是绕过霍尔木兹海峡的关键替代通道。袭击后Brent油价冲至$107.54，WTI冲至$102.20。胡塞武装同时 seized Perim Island（曼德海峡入口），进一步威胁红海航道。预计管道10月初部分恢复。
+                </div>
+                <h4 style="color: var(--accent-blue); margin: 15px 0 10px;">国际影响分析</h4>
+                <table>
+                    <thead>
+                        <tr><th>品种</th><th>影响方向</th><th>传导路径</th><th>预测幅度</th><th>置信度</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Brent原油</td><td class="bullish">强烈看涨</td><td>管道关闭→沙特出口能力下降→全球供应缺口</td><td>+5~10%（已部分兑现）</td><td>85%</td></tr>
+                        <tr><td>WTI原油</td><td class="bullish">看涨</td><td>中东风险溢价→美油替代需求↑</td><td>+3~8%</td><td>80%</td></tr>
+                        <tr><td>TTF天然气</td><td class="bullish">看涨</td><td>油代气发电需求↑+中东LNG出口风险</td><td>+5~15%</td><td>75%</td></tr>
+                        <tr><td>ARA煤价</td><td class="bullish">看涨</td><td>油气↑→煤代需求↑</td><td>+5~10%</td><td>70%</td></tr>
+                    </tbody>
+                </table>
+                <div class="logic-chain">
+                    <strong>推测逻辑链：</strong><br>
+                    沙特东西管道是绕过霍尔木兹海峡的战略通道（将原油从波斯湾运往红海 Yanbu 港）→管道关闭后，沙特原油只能通过霍尔木兹海峡出口→但霍尔木兹海峡通航已严重受阻（每日不足10艘，正常14艘）→沙特实际出口能力大幅下降→全球原油供应缺口或达300-500万桶/日→油价冲击$110-120区间。<br><br>
+                    <strong>历史参照：</strong>2019年9月沙特Abqaiq炼厂遇袭，日减产570万桶，Brent次日暴涨19%至$71；2022年俄乌冲突，TTF从€89涨至€339（+280%），欧洲电价涨5倍。
+                </div>
+                <h4 style="color: var(--accent-yellow); margin: 15px 0 10px;">国内价格系列影响推测</h4>
+                <table class="domestic-table">
+                    <thead>
+                        <tr><th>国内品种</th><th>当前价格</th><th>影响方向</th><th>传导路径</th><th>预测幅度</th><th>置信度</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>INE SC原油</td><td>~¥520-530/桶</td><td class="bullish">强烈看涨</td><td>Brent↑→INE SC直接跟涨+人民币汇率因素</td><td>+5~10%（至¥545-580）</td><td>80%</td></tr>
+                        <tr><td>成品油</td><td>待9月24日调价</td><td class="bullish">看涨</td><td>原油成本↑→发改委调价上调</td><td>本轮已预计涨0.49-0.52元/L</td><td>90%</td></tr>
+                        <tr><td>秦港Q5500</td><td>¥728/t</td><td class="bullish">温和看涨</td><td>油价↑→煤化工/煤制油替代→但保供稳价政策约束</td><td>+2~4%（至¥740-760）</td><td>60%</td></tr>
+                        <tr><td>BSPI环渤海煤价</td><td>¥728/t</td><td class="bullish">温和看涨</td><td>同上，指数滞后1-2周</td><td>+2~3%</td><td>60%</td></tr>
+                        <tr><td>SHPGX天然气</td><td>¥6223/t</td><td class="bullish">看涨</td><td>国际气价↑→进口LNG到岸成本↑→国内跟涨</td><td>+5~10%（至¥6500-6800）</td><td>70%</td></tr>
+                        <tr><td>重庆交易中心LNG</td><td>¥6010/t</td><td class="bullish">看涨</td><td>国际JKM/TTF↑→进口成本↑→区域价格传导</td><td>+5~12%（至¥6300-6700）</td><td>70%</td></tr>
+                        <tr><td>广东电力现货</td><td>~372元/MWh</td><td class="bullish">看涨</td><td>气价↑→广东气电边际机组成本↑→现货电价↑</td><td>+5~15%</td><td>65%</td></tr>
+                        <tr><td>山西/山东/江苏电力</td><td>299-352元/MWh</td><td class="bullish">温和看涨</td><td>煤价微涨+气电联动→边际定价上移</td><td>+3~8%</td><td>55%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 事件4 -->
+            <div class="event-card">
+                <div class="event-header">
+                    <div>
+                        <div class="event-title">【事件004】霍尔木兹海峡通航严重受阻，曼德海峡被封锁</div>
+                        <div class="event-meta">日期：2026-09月中旬持续 | 来源：<a href="https://www.headlinesorbit.com/business/saudi-pipeline-damage-and-hormuz-chokehold-push-oil-toward-107" target="_blank">Headlines Orbit</a>、<a href="https://content-static.cctvnews.cctv.com/snow-book/index.html?item_id=13652027005848766208" target="_blank">央视新闻</a></div>
+                    </div>
+                </div>
+                <div class="event-content">
+                    中东海上安全形势急剧恶化。霍尔木兹海峡商品船舶通行量降至每日不足10艘，较此前10日均值14艘显著下降。胡塞武装已控制曼德海峡入口的Perim Island，红海航道面临封锁风险。霍尔木兹海峡承担全球20-30%原油海运和20%LNG贸易，任何进一步通航收缩都将造成即时供应真空。美国官员表示目前没有直接干预计划。
+                </div>
+                <h4 style="color: var(--accent-blue); margin: 15px 0 10px;">国际影响分析</h4>
+                <table>
+                    <thead>
+                        <tr><th>品种</th><th>影响方向</th><th>传导路径</th><th>预测幅度</th><th>置信度</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Brent原油</td><td class="bullish">强烈看涨</td><td>海峡封锁→全球20-30%海运原油中断</td><td>+10~20%（至$115-125）</td><td>75%</td></tr>
+                        <tr><td>TTF天然气</td><td class="bullish">强烈看涨</td><td>中东LNG出口受阻→欧洲补库困难</td><td>+15~25%（至€90-100）</td><td>70%</td></tr>
+                        <tr><td>JKM LNG</td><td class="bullish">强烈看涨</td><td>卡塔尔/阿联酋LNG出口风险↑</td><td>+15~25%（至$21-23）</td><td>70%</td></tr>
+                    </tbody>
+                </table>
+                <div class="logic-chain">
+                    <strong>推测逻辑链：</strong><br>
+                    霍尔木兹海峡是全球能源运输咽喉（每日约2100万桶原油+大量LNG）→海峡通航降至10艘/日以下→若完全关闭，全球供应即时减少1500-2000万桶/日→远超任何战略储备释放能力→油价可能冲击历史高位→欧洲因储气库低位（66%）面临"无气可补"困境→气价可能复制2022年俄乌冲突走势（TTF从€89涨至€339）。<br><br>
+                    <strong>历史参照：</strong>2026年3月卡塔尔LNG遭袭，气价+20%，油价+8%；霍尔木兹海峡每次紧张局势都会带来5-15美元的风险溢价。
+                </div>
+                <h4 style="color: var(--accent-yellow); margin: 15px 0 10px;">国内价格系列影响推测</h4>
+                <table class="domestic-table">
+                    <thead>
+                        <tr><th>国内品种</th><th>当前价格</th><th>影响方向</th><th>传导路径</th><th>预测幅度</th><th>置信度</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>INE SC原油</td><td>~¥520-530/桶</td><td class="bullish">强烈看涨</td><td>全球供应危机→Brent飙升→INE SC跟涨</td><td>+10~18%（至¥570-620）</td><td>70%</td></tr>
+                        <tr><td>成品油</td><td>待9月24日调价</td><td class="bullish">强烈看涨</td><td>原油成本飙升→连续上调</td><td>9月24日涨0.5元/L后或继续上调</td><td>80%</td></tr>
+                        <tr><td>秦港Q5500/BSPI</td><td>¥728/t</td><td class="bullish">看涨</td><td>油气飙升→煤炭替代发电需求↑</td><td>+5~10%（至¥760-800）</td><td>60%</td></tr>
+                        <tr><td>SHPGX天然气</td><td>¥6223/t</td><td class="bullish">强烈看涨</td><td>国际LNG供应中断→进口成本飙升</td><td>+15~25%（至¥7200-7800）</td><td>65%</td></tr>
+                        <tr><td>重庆交易中心LNG</td><td>¥6010/t</td><td class="bullish">强烈看涨</td><td>国际JKM飙升→国内联动</td><td>+15~25%（至¥6900-7500）</td><td>65%</td></tr>
+                        <tr><td>广东电力现货</td><td>~372元/MWh</td><td class="bullish">看涨</td><td>气价飙升→气电成本↑→电价↑</td><td>+10~20%</td><td>60%</td></tr>
+                        <tr><td>山西/山东/江苏电力</td><td>299-352元/MWh</td><td class="bullish">温和看涨</td><td>煤价上涨+外受电价格传导</td><td>+5~12%</td><td>55%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 事件5 -->
+            <div class="event-card">
+                <div class="event-header">
+                    <div>
+                        <div class="event-title">【事件005】欧洲储气库库存创历史同期最低，仅66.59%</div>
+                        <div class="event-meta">日期：2026-09月上旬持续 | 来源：<a href="https://agsi.gie.eu/" target="_blank">AGSI/GIE</a>、<a href="https://tass.com/economy/2021941" target="_blank">TASS</a>、<a href="https://stcn.com/article/kx-tag-detail.html?tag=tsaJyQSpC1At" target="_blank">证券时报/中信建投</a></div>
+                    </div>
+                </div>
+                <div class="event-content">
+                    欧洲天然气基础设施协会（GIE）数据显示，截至9月5日，欧盟储气库蓄气率仅为66.59%，远低于去年同期93.9%，创下该机构有记录15年以来的历史同期最低值。欧洲正以历史罕见的低储气缓冲进入冬季供暖期。欧盟新规要求10月1日至12月1日期间储气设施必须达到90%容量。储气库通常承担欧洲冬季三分之一的天然气需求。德国Q4电力期货已涨至€173.61/MWh。
+                </div>
+                <h4 style="color: var(--accent-blue); margin: 15px 0 10px;">国际影响分析</h4>
+                <table>
+                    <thead>
+                        <tr><th>品种</th><th>影响方向</th><th>传导路径</th><th>预测幅度</th><th>置信度</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>TTF天然气</td><td class="bullish">强烈看涨</td><td>补库刚需+低库存→价格飙升</td><td>+20~40%（至€95-110）</td><td>80%</td></tr>
+                        <tr><td>JKM LNG</td><td class="bullish">强烈看涨</td><td>欧洲与亚洲抢气→全球LNG溢价</td><td>+15~30%（至$21-24）</td><td>75%</td></tr>
+                        <tr><td>德国电力期货</td><td class="bullish">强烈看涨</td><td>气电边际定价→气价每涨10€→电价涨15-20€</td><td>Q4期货或冲€200+</td><td>75%</td></tr>
+                        <tr><td>ARA煤价</td><td class="bullish">看涨</td><td>气价↑→煤电替代需求↑</td><td>+10~15%</td><td>70%</td></tr>
+                    </tbody>
+                </table>
+                <div class="logic-chain">
+                    <strong>推测逻辑链：</strong><br>
+                    欧盟储气库容量约1130 TWh→当前仅存储753 TWh→缺口约377 TWh→需在10-12月内补充至90%（1017 TWh）→意味着未来2个月需注入约264 TWh→日均注入量需达4.4 TWh→将推高气价至历史高位→欧洲气电边际定价机制下，电价将同步飙升。<br><br>
+                    <strong>历史参照：</strong>2022年俄乌冲突后，欧洲储气库从低位补库，TTF从€89涨至€339（+280%），电价涨5倍；2021年10月中国煤价暴涨至1330元/吨引发限电。
+                </div>
+                <h4 style="color: var(--accent-yellow); margin: 15px 0 10px;">国内价格系列影响推测</h4>
+                <table class="domestic-table">
+                    <thead>
+                        <tr><th>国内品种</th><th>当前价格</th><th>影响方向</th><th>传导路径</th><th>预测幅度</th><th>置信度</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>INE SC原油</td><td>~¥520-530/桶</td><td class="neutral">中性</td><td>欧洲气价对油价影响间接</td><td>基本持平</td><td>70%</td></tr>
+                        <tr><td>成品油</td><td>待9月24日调价</td><td class="neutral">中性</td><td>同上</td><td>按机制调整</td><td>80%</td></tr>
+                        <tr><td>秦港Q5500/BSPI</td><td>¥728/t</td><td class="bullish">看涨</td><td>欧洲气价↑→国际煤代气需求↑→中国煤出口套利</td><td>+3~6%（至¥750-770）</td><td>60%</td></tr>
+                        <tr><td>SHPGX天然气</td><td>¥6223/t</td><td class="bullish">强烈看涨</td><td>欧洲抢购LNG→全球LNG现货紧张→进口到岸价↑</td><td>+10~20%（至¥6800-7500）</td><td>75%</td></tr>
+                        <tr><td>重庆交易中心LNG</td><td>¥6010/t</td><td class="bullish">强烈看涨</td><td>全球LNG紧张→国内管道气/LNG联动上涨</td><td>+10~20%（至¥6600-7200）</td><td>75%</td></tr>
+                        <tr><td>广东电力现货</td><td>~372元/MWh</td><td class="bullish">看涨</td><td>LNG↑→气电成本↑→现货电价↑</td><td>+8~15%</td><td>65%</td></tr>
+                        <tr><td>山西/山东/江苏电力</td><td>299-352元/MWh</td><td class="bullish">温和看涨</td><td>煤价传导+外受电价格联动</td><td>+3~8%</td><td>55%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 事件6 -->
+            <div class="event-card">
+                <div class="event-header">
+                    <div>
+                        <div class="event-title">【事件006】卡塔尔LNG设施遭袭，JKM大涨6.71%</div>
+                        <div class="event-meta">日期：2026-09月中旬 | 来源：<a href="https://gmteight.com/flash/detail/1459939" target="_blank">GMTEight</a>、<a href="https://www.cls.cn/detail/2334754" target="_blank">财联社/摩根士丹利</a></div>
+                    </div>
+                </div>
+                <div class="event-content">
+                    9月19日，Platts亚洲液化天然气基准价格JKM上涨6.71%至$18.463/MMBtu， driven by attacks on Qatari gas facilities and escalating tensions between the US and Iran。摩根士丹利预计2026年三季度JKM价格将达$30/MMBtu，四季度进一步攀升至$32.50/MMBtu。卡塔尔LNG不可抗力预计11月初到期，若届时地缘冲突未缓解，全球LNG供应将面临更大压力。
+                </div>
+                <h4 style="color: var(--accent-blue); margin: 15px 0 10px;">国际影响分析</h4>
+                <table>
+                    <thead>
+                        <tr><th>品种</th><th>影响方向</th><th>传导路径</th><th>预测幅度</th><th>置信度</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>JKM LNG</td><td class="bullish">强烈看涨</td><td>卡塔尔供应中断→亚洲LNG紧张</td><td>+20~40%（至$22-26）</td><td>75%</td></tr>
+                        <tr><td>TTF天然气</td><td class="bullish">强烈看涨</td><td>亚洲与欧洲抢气→全球溢价</td><td>+15~30%</td><td>75%</td></tr>
+                        <tr><td>Brent原油</td><td class="bullish">看涨</td><td>LNG中断→油代气需求↑</td><td>+3~5%</td><td>65%</td></tr>
+                    </tbody>
+                </table>
+                <div class="logic-chain">
+                    <strong>推测逻辑链：</strong><br>
+                    卡塔尔是全球最大LNG出口国（年出口约8000万吨）→设施遭袭后部分产能关闭→亚洲主要买家（中国、日本、韩国）被迫高价采购替代货源→JKM从$18飙升至$25+→中国进口LNG到岸价突破$20/MMBtu→国内门站价/终端售价跟涨。<br><br>
+                    <strong>历史参照：</strong>2026年3月卡塔尔LNG遭袭，气价+20%，油价+8%；2022年俄乌冲突后欧洲从卡塔尔增购LNG，JKM一度触及$40+。
+                </div>
+                <h4 style="color: var(--accent-yellow); margin: 15px 0 10px;">国内价格系列影响推测</h4>
+                <table class="domestic-table">
+                    <thead>
+                        <tr><th>国内品种</th><th>当前价格</th><th>影响方向</th><th>传导路径</th><th>预测幅度</th><th>置信度</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>INE SC原油</td><td>~¥520-530/桶</td><td class="bullish">温和看涨</td><td>LNG紧张→油代气→原油需求↑</td><td>+2~4%</td><td>60%</td></tr>
+                        <tr><td>成品油</td><td>待9月24日调价</td><td class="neutral">中性</td><td>间接影响</td><td>按机制调整</td><td>70%</td></tr>
+                        <tr><td>秦港Q5500/BSPI</td><td>¥728/t</td><td class="bullish">温和看涨</td><td>气价↑→煤代气发电↑</td><td>+2~4%</td><td>55%</td></tr>
+                        <tr><td>SHPGX天然气</td><td>¥6223/t</td><td class="bullish">强烈看涨</td><td>JKM↑→进口LNG成本↑→国内出厂价跟涨</td><td>+10~18%（至¥6800-7400）</td><td>75%</td></tr>
+                        <tr><td>重庆交易中心LNG</td><td>¥6010/t</td><td class="bullish">强烈看涨</td><td>进口成本↑→区域LNG价格上涨</td><td>+10~18%（至¥6600-7100）</td><td>75%</td></tr>
+                        <tr><td>广东电力现货</td><td>~372元/MWh</td><td class="bullish">看涨</td><td>气电成本↑→现货电价↑</td><td>+8~15%</td><td>65%</td></tr>
+                        <tr><td>山西/山东/江苏电力</td><td>299-352元/MWh</td><td class="bullish">温和看涨</td><td>气电联动+煤价传导</td><td>+3~8%</td><td>55%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 政治事件追踪 -->
+        <div class="section">
+            <h2>🌍 政治事件与地缘风险追踪</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>事件</th>
+                        <th>地点/涉及方</th>
+                        <th>能源影响</th>
+                        <th>来源</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2026-09-18</td>
+                        <td>美国签署格雷厄姆制裁法案</td>
+                        <td>美国/俄罗斯/伊朗/第三国</td>
+                        <td>俄油出口受限，全球供应收紧</td>
+                        <td><a href="https://cbgc.scol.com.cn/news/7972140" target="_blank">央视新闻</a></td>
+                    </tr>
+                    <tr>
+                        <td>2026-09-14</td>
+                        <td>胡塞武装袭击沙特基础设施</td>
+                        <td>沙特/也门/红海</td>
+                        <td>沙特管道关闭，红海通航受阻</td>
+                        <td><a href="https://www.gulftoday.ae/news/2026/09/14/oil-prices-up-nearly-3-following-new-strikes-on-saudi-strait-of-hormuz" target="_blank">Gulf Today</a></td>
+                    </tr>
+                    <tr>
+                        <td>2026-09-10</td>
+                        <td>沙特东西输油管道遭无人机袭击</td>
+                        <td>沙特（利雅得-麦地那段）</td>
+                        <td>管道预防性关闭，日损失400-500万桶运力</td>
+                        <td><a href="https://theamericanexpress.us/article/oil-prices-surge-after-bombing-of-key-saudi-pipeline-2026-09-15" target="_blank">American Express Times</a></td>
+                    </tr>
+                    <tr>
+                        <td>2026-09月中旬</td>
+                        <td>霍尔木兹海峡通航量骤降</td>
+                        <td>伊朗/阿曼/霍尔木兹海峡</td>
+                        <td>全球20-30%海运原油受威胁</td>
+                        <td><a href="https://www.headlinesorbit.com/business/saudi-pipeline-damage-and-hormuz-chokehold-push-oil-toward-107" target="_blank">Headlines Orbit</a></td>
+                    </tr>
+                    <tr>
+                        <td>2026-09月中旬</td>
+                        <td>卡塔尔LNG设施遭袭</td>
+                        <td>卡塔尔</td>
+                        <td>全球LNG供应中断，JKM大涨</td>
+                        <td><a href="https://gmteight.com/flash/detail/1459939" target="_blank">GMTEight</a></td>
+                    </tr>
+                    <tr>
+                        <td>2026-09-22~28</td>
+                        <td>第81届联合国大会（预期）</td>
+                        <td>美国纽约</td>
+                        <td>关注中东局势讨论及制裁决议</td>
+                        <td><a href="https://un.org/securitycouncil" target="_blank">联合国</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 历史参照系 -->
+        <div class="section">
+            <h2>📚 历史参照系</h2>
+            <div class="highlight-box">
+                <ul style="margin-left: 20px; color: var(--text-secondary);">
+                    <li><strong>俄乌冲突2022年：</strong>TTF从€89涨至€339/MWh（+280%），欧洲电价涨5倍</li>
+                    <li><strong>2020年OPEC+价格战：</strong>WTI跌至-$37.63/桶（历史首次负油价）</li>
+                    <li><strong>2021年中国煤价暴涨：</strong>涨至1330元/吨引发大范围限电</li>
+                    <li><strong>2026年3月卡塔尔LNG遭袭：</strong>气价+20%，油价+8%</li>
+                    <li><strong>沙特管道9月10日遭袭：</strong>油价冲至$109/桶</li>
+                    <li><strong>欧洲气电边际定价：</strong>气价每涨€10→电价涨€15-20</li>
+                    <li><strong>霍尔木兹海峡：</strong>承担全球20-30%原油海运和20%LNG贸易</li>
+                    <li><strong>2021年10月发改委电价改革：</strong>煤价从¥1330回落至¥800区间</li>
+                    <li><strong>2008年中国成品油价格管制：</strong>导致炼厂亏损、油荒</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 监控记录 -->
+        <div class="section archive-section">
+            <h2>📝 监控记录归档</h2>
+            <div id="monitoring-archive-insert-point"></div>
+            <!-- 新记录插入位置（在此行之前插入） -->
+            <div class="monitor-log">
+                <strong>[2026-09-19 14:30]</strong> 自动监控完成。更新6个事件卡片、价格卡片、综合汇总表。新增：美国签署格雷厄姆制裁法案（9月18日）、国际油价连跌三日、沙特管道/霍尔木兹/卡塔尔LNG持续影响。欧洲储气库66.59%历史最低。国内成品油9月24日预计上调0.49-0.52元/L。
+            </div>
+            <div class="monitor-log">
+                <strong>[2026-09-19 11:30]</strong> 监控到JKM LNG大涨6.71%至$18.463/MMBtu（<a href="https://gmteight.com/flash/detail/1459939" target="_blank">来源</a>）；美国签署对俄伊制裁法案（<a href="https://cbgc.scol.com.cn/news/7972140" target="_blank">来源</a>）。
+            </div>
+        </div>
+
+        <footer style="text-align: center; padding: 30px; color: var(--text-secondary); font-size: 0.85rem; border-top: 1px solid var(--border-color); margin-top: 30px;">
+            <p>电力交易能源市场日报 | 自动监控每3小时更新 | 数据仅供参考，不构成投资建议</p>
+            <p>托管地址：<a href="https://mkslz.github.io/energy-market-daily/" target="_blank" style="color: var(--accent-blue);">https://mkslz.github.io/energy-market-daily/</a></p>
+            <p>监控范围：交易所/库存/欧洲天然气/宏观/地缘/中国政策/国内价格/天气/替代能源/欧盟法规/综合新闻（11大类）</p>
+        </footer>
+    </div>
+</body>
+</html>
