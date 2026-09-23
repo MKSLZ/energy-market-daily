@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>能源市场日报 - 2026/09/23</title>
+  <style>
+    :root {
+      --bg: #f7f9fc;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+      --text-secondary: #6b7280;
+      --border: #e5e7eb;
+      --oil: #ef4444;
+      --gas: #3b82f6;
+      --coal: #6b7280;
+      --power: #f59e0b;
+      --up: #dc2626;
+      --down: #16a34a;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 24px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    header {
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .date {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-top: 4px;
+    }
+    .summary-bar {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .summary-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot.oil { background: var(--oil); }
+    .dot.gas { background: var(--gas); }
+    .dot.coal { background: var(--coal); }
+    .dot.power { background: var(--power); }
+    .tag {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .tag.up { background: #fee2e2; color: var(--up); }
+    .tag.down { background: #dcfce7; color: var(--down); }
+    .tag.flat { background: #f3f4f6; color: var(--text-secondary); }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      flex: 1;
+    }
+    .card-body {
+      font-size: 14px;
+      color: var(--text);
+    }
+    .card-body p {
+      margin-bottom: 8px;
+    }
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .price-row:last-child {
+      border-bottom: none;
+    }
+    .price-label {
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+    .price-value {
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .forecast-box {
+      background: #eff6ff;
+      border-left: 4px solid var(--gas);
+      padding: 16px;
+      border-radius: 0 8px 8px 0;
+      margin-top: 4px;
+    }
+    .forecast-box h3 {
+      font-size: 15px;
+      margin-bottom: 8px;
+      color: #1e40af;
+    }
+    .forecast-box p {
+      font-size: 14px;
+      color: #334155;
+    }
+    .source {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 12px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>能源市场监控日报</h1>
+      <div class="date">2026年9月23日 星期三</div>
+    </header>
+
+    <div class="summary-bar">
+      <div class="summary-item">
+        <span class="dot oil"></span>
+        <span>石油</span>
+        <span class="tag down">下跌</span>
+      </div>
+      <div class="summary-item">
+        <span class="dot gas"></span>
+        <span>天然气</span>
+        <span class="tag up">上涨</span>
+      </div>
+      <div class="summary-item">
+        <span class="dot coal"></span>
+        <span>煤炭</span>
+        <span class="tag flat">持平</span>
+      </div>
+      <div class="summary-item">
+        <span class="dot power"></span>
+        <span>电价预期</span>
+        <span class="tag flat">平稳</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="dot oil"></span>
+        <span class="card-title">石油市场</span>
+        <span class="tag down">-1%</span>
+      </div>
+      <div class="card-body">
+        <div class="price-row">
+          <span class="price-label">布伦特原油</span>
+          <span class="price-value" style="color:var(--down)">开盘跌1%</span>
+        </div>
+        <div class="price-row">
+          <span class="price-label">WTI原油</span>
+          <span class="price-value" style="color:var(--down)">89.61美元/桶 (-1%)</span>
+        </div>
+        <p style="margin-top:10px;">受美伊谈判进展及管道运输前景影响，国际油价承压下行。若美伊谈判取得突破，伊朗原油重返市场可能进一步缓解供应紧张局面。</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="dot gas"></span>
+        <span class="card-title">天然气市场</span>
+        <span class="tag up">+2.92美元</span>
+      </div>
+      <div class="card-body">
+        <div class="price-row">
+          <span class="price-label">美国HH天然气</span>
+          <span class="price-value" style="color:var(--up)">2.92美元/百万英热 (+2周高点)</span>
+        </div>
+        <div class="price-row">
+          <span class="price-label">国产LNG西北</span>
+          <span class="price-value" style="color:var(--down)">5937元/吨 (-0.44%)</span>
+        </div>
+        <div class="price-row">
+          <span class="price-label">国产LNG环渤海</span>
+          <span class="price-value" style="color:var(--down)">6295元/吨 (-0.29%)</span>
+        </div>
+        <p style="margin-top:10px;">美国天然气价格升至两周高点，因产量降至11周最低。国内LNG价格小幅回落，市场整体供需平衡。</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="dot coal"></span>
+        <span class="card-title">煤炭市场</span>
+        <span class="tag flat">持平</span>
+      </div>
+      <div class="card-body">
+        <div class="price-row">
+          <span class="price-label">秦皇岛动力煤Q5500</span>
+          <span class="price-value">754元/吨 (0%)</span>
+        </div>
+        <div class="price-row">
+          <span class="price-label">综合交易5500K</span>
+          <span class="price-value">684元/吨 (0%)</span>
+        </div>
+        <div class="price-row">
+          <span class="price-label">下水煤长协价</span>
+          <span class="price-value" style="color:var(--up)">704元/吨 (+4元)</span>
+        </div>
+        <p style="margin-top:10px;">港口动力煤价格持稳，中长期合同价格小幅上调。坑口价格稳中有升，蒙西5500K报460元/吨。</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="dot power"></span>
+        <span class="card-title">国内电价推测</span>
+        <span class="tag flat">平稳</span>
+      </div>
+      <div class="card-body">
+        <div class="price-row">
+          <span class="price-label">现货日前均价区间</span>
+          <span class="price-value">208~246元/兆瓦时</span>
+        </div>
+        <div class="price-row">
+          <span class="price-label">江西新能源机制电价</span>
+          <span class="price-value">0.24~0.379元/度</span>
+        </div>
+        <div class="forecast-box">
+          <h3>短期电价展望</h3>
+          <p>国际原油下跌利好火电燃料成本端，但气价上涨形成对冲。煤炭长协价格稳中有升提供底部支撑。预计短期国内电价以稳为主，现货市场日前均价或在210~250元/兆瓦时区间波动。进入秋季用电高峰过渡期，需关注后续冷空气对取暖负荷的拉动作用。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="source">数据来源：财联社、每日经济新闻、CCTD、上海石油天然气交易中心、国际能源网</div>
+  </div>
+</body>
+</html>
