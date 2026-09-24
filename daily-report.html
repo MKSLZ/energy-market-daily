@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>能源市场日报 - 2026/09/23</title>
+  <title>能源市场日报 - 2026/09/24</title>
   <style>
     :root {
       --bg: #f7f9fc;
@@ -77,6 +77,7 @@
     .tag.up { background: #fee2e2; color: var(--up); }
     .tag.down { background: #dcfce7; color: var(--down); }
     .tag.flat { background: #f3f4f6; color: var(--text-secondary); }
+    .tag.watch { background: #fef3c7; color: #b45309; }
 
     .card {
       background: var(--card-bg);
@@ -103,6 +104,21 @@
     .card-body p {
       margin-bottom: 8px;
     }
+    .event-list {
+      list-style: none;
+      margin: 8px 0;
+    }
+    .event-list li {
+      padding: 10px 12px;
+      background: #f9fafb;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+    .event-list li strong {
+      color: var(--text);
+    }
     .price-row {
       display: flex;
       justify-content: space-between;
@@ -123,7 +139,7 @@
     }
     .forecast-box {
       background: #eff6ff;
-      border-left: 4px solid var(--gas);
+      border-left: 4px solid var(--power);
       padding: 16px;
       border-radius: 0 8px 8px 0;
       margin-top: 4px;
@@ -131,11 +147,11 @@
     .forecast-box h3 {
       font-size: 15px;
       margin-bottom: 8px;
-      color: #1e40af;
+      color: #92400e;
     }
     .forecast-box p {
       font-size: 14px;
-      color: #334155;
+      color: #374151;
     }
     .source {
       font-size: 12px;
@@ -149,94 +165,74 @@
   <div class="container">
     <header>
       <h1>能源市场监控日报</h1>
-      <div class="date">2026年9月23日 星期三</div>
+      <div class="date">2026年9月24日 星期四</div>
     </header>
 
     <div class="summary-bar">
       <div class="summary-item">
         <span class="dot oil"></span>
         <span>石油</span>
-        <span class="tag down">下跌</span>
+        <span class="tag watch">震荡</span>
       </div>
       <div class="summary-item">
         <span class="dot gas"></span>
         <span>天然气</span>
-        <span class="tag up">上涨</span>
+        <span class="tag up">高位</span>
       </div>
       <div class="summary-item">
         <span class="dot coal"></span>
         <span>煤炭</span>
-        <span class="tag flat">持平</span>
+        <span class="tag up">走强</span>
       </div>
       <div class="summary-item">
         <span class="dot power"></span>
-        <span>电价预期</span>
-        <span class="tag flat">平稳</span>
+        <span>电价推测</span>
+        <span class="tag watch">偏紧</span>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
         <span class="dot oil"></span>
-        <span class="card-title">石油市场</span>
-        <span class="tag down">-1%</span>
+        <span class="card-title">石油 · 当日事件</span>
       </div>
       <div class="card-body">
-        <div class="price-row">
-          <span class="price-label">布伦特原油</span>
-          <span class="price-value" style="color:var(--down)">开盘跌1%</span>
-        </div>
-        <div class="price-row">
-          <span class="price-label">WTI原油</span>
-          <span class="price-value" style="color:var(--down)">89.61美元/桶 (-1%)</span>
-        </div>
-        <p style="margin-top:10px;">受美伊谈判进展及管道运输前景影响，国际油价承压下行。若美伊谈判取得突破，伊朗原油重返市场可能进一步缓解供应紧张局面。</p>
+        <ul class="event-list">
+          <li><strong>霍尔木兹海峡出现缓和信号：</strong>伊朗高级官员称，若美国减轻军事压力并解除海上封锁，可在7天内重开海峡。方案已获伊朗最高层批准，卡塔尔在联大期间参与调解。</li>
+          <li><strong>OPEC+暂停增产：</strong>9月6日线上会议决定10月产量维持与9月持平，为今年4月启动增产以来首次暂停，沙特、俄罗斯等7国参与。下次会议10月4日。</li>
+          <li><strong>油价剧烈震荡：</strong>9月23日收盘WTI 92.16美元/桶（+1.81%）、布伦特103.08美元/桶（+3.86%）；但随后跳水，国内原油期货主力2611跌破700元/桶，盘中WTI一度跌破90。</li>
+          <li><strong>美银警报：</strong>若霍尔木兹海峡供应进一步收紧，油价恐升破150美元；当前海峡日通行量已从战前15艘降至日均3-5艘。</li>
+        </ul>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
         <span class="dot gas"></span>
-        <span class="card-title">天然气市场</span>
-        <span class="tag up">+2.92美元</span>
+        <span class="card-title">天然气 · 当日事件</span>
       </div>
       <div class="card-body">
-        <div class="price-row">
-          <span class="price-label">美国HH天然气</span>
-          <span class="price-value" style="color:var(--up)">2.92美元/百万英热 (+2周高点)</span>
-        </div>
-        <div class="price-row">
-          <span class="price-label">国产LNG西北</span>
-          <span class="price-value" style="color:var(--down)">5937元/吨 (-0.44%)</span>
-        </div>
-        <div class="price-row">
-          <span class="price-label">国产LNG环渤海</span>
-          <span class="price-value" style="color:var(--down)">6295元/吨 (-0.29%)</span>
-        </div>
-        <p style="margin-top:10px;">美国天然气价格升至两周高点，因产量降至11周最低。国内LNG价格小幅回落，市场整体供需平衡。</p>
+        <ul class="event-list">
+          <li><strong>欧洲TTF创新高：</strong>荷兰TTF天然气期货升破70欧元/兆瓦时，为2023年以来最高，受海湾LNG供应不确定性推动。</li>
+          <li><strong>亚洲LNG三年高位：</strong>现货LNG价格达每百万英热单位25.9美元，较伊朗战前翻倍以上，高盛预警若供应持续受限年底或至35美元。</li>
+          <li><strong>国内LNG报价：</strong>山西华新襄垣5770元/吨、晋中5870元/吨、临汾5640元/吨（9月24日上海石油天然气交易中心）。</li>
+          <li><strong>海湾出口受阻：</strong>全球约1/5 LNG贸易经霍尔木兹海峡，目前实际通行严重受限。</li>
+        </ul>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
         <span class="dot coal"></span>
-        <span class="card-title">煤炭市场</span>
-        <span class="tag flat">持平</span>
+        <span class="card-title">煤炭 · 当日事件</span>
       </div>
       <div class="card-body">
-        <div class="price-row">
-          <span class="price-label">秦皇岛动力煤Q5500</span>
-          <span class="price-value">754元/吨 (0%)</span>
-        </div>
-        <div class="price-row">
-          <span class="price-label">综合交易5500K</span>
-          <span class="price-value">684元/吨 (0%)</span>
-        </div>
-        <div class="price-row">
-          <span class="price-label">下水煤长协价</span>
-          <span class="price-value" style="color:var(--up)">704元/吨 (+4元)</span>
-        </div>
-        <p style="margin-top:10px;">港口动力煤价格持稳，中长期合同价格小幅上调。坑口价格稳中有升，蒙西5500K报460元/吨。</p>
+        <ul class="event-list">
+          <li><strong>港口煤价月内大涨：</strong>秦皇岛港5500大卡动力煤986元/吨（月涨118元），京唐港山西主焦煤2700元/吨（月涨100元）。</li>
+          <li><strong>9月上旬商务部数据：</strong>炼焦煤1508元/吨（+3.9%）、无烟煤1248元/吨（+2.4%）、动力煤840元/吨（+1.0%）。</li>
+          <li><strong>统计局9月上旬：</strong>无烟煤（洗中块）1618.2元/吨，环比涨141.1元（+9.6%）；山西优混5500大卡同步上行。</li>
+          <li><strong>供需紧平衡：</strong>冬季备煤需求启动，叠加国际能源价格传导，煤价支撑较强。</li>
+        </ul>
       </div>
     </div>
 
@@ -244,25 +240,31 @@
       <div class="card-header">
         <span class="dot power"></span>
         <span class="card-title">国内电价推测</span>
-        <span class="tag flat">平稳</span>
       </div>
       <div class="card-body">
         <div class="price-row">
-          <span class="price-label">现货日前均价区间</span>
-          <span class="price-value">208~246元/兆瓦时</span>
+          <span class="price-label">贵州9月代理购电价</span>
+          <span class="price-value">0.397元/千瓦时</span>
         </div>
         <div class="price-row">
-          <span class="price-label">江西新能源机制电价</span>
-          <span class="price-value">0.24~0.379元/度</span>
+          <span class="price-label">湖北工商业单一制基准</span>
+          <span class="price-value">0.2103元/千瓦时</span>
+        </div>
+        <div class="price-row">
+          <span class="price-label">可再生能源装机占比</span>
+          <span class="price-value" style="color:var(--down)">超60%（火电降至39%）</span>
         </div>
         <div class="forecast-box">
-          <h3>短期电价展望</h3>
-          <p>国际原油下跌利好火电燃料成本端，但气价上涨形成对冲。煤炭长协价格稳中有升提供底部支撑。预计短期国内电价以稳为主，现货市场日前均价或在210~250元/兆瓦时区间波动。进入秋季用电高峰过渡期，需关注后续冷空气对取暖负荷的拉动作用。</p>
+          <h3>电价推测 · 偏紧运行</h3>
+          <p>① <strong>燃料成本支撑底部：</strong>煤炭港口价月涨超10%、长协价上调，火电单位成本刚性抬升；天然气高位进一步推升燃气发电边际成本。<br>
+          ② <strong>对冲因素：</strong>国际油价若随霍尔木兹缓和而回落，将减轻煤化工及替代燃料成本传导；可再生能源高占比提供低价电量。<br>
+          ③ <strong>秋季过渡期：</strong>夏季负荷已过，冬季取暖尚未全面启动，短期供需总体平衡但结构性偏紧。<br>
+          ④ <strong>结论：</strong>预计近期国内工商业代理购电价稳中偏紧，现货日前均价区间220~270元/兆瓦时；需警惕若霍尔木兹海峡局势反复，油气价反弹将推升综合能源成本。</p>
         </div>
       </div>
     </div>
 
-    <div class="source">数据来源：财联社、每日经济新闻、CCTD、上海石油天然气交易中心、国际能源网</div>
+    <div class="source">数据来源：新华社、财联社、金投网、上海石油天然气交易中心、全国煤炭交易中心、商务部、格隆汇、高盛研究、美银证券</div>
   </div>
 </body>
 </html>
